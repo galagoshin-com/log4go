@@ -66,10 +66,23 @@ func FormatLogRecord(format string, rec *LogRecord) string {
 	// Split the string into pieces by % signs
 	pieces := bytes.Split(formatByte, []byte{'%'})
 
+	lvl2color := func(level Level) string {
+		colors := map[string]string{
+			"INFO": "\u001b[34m*\u001b[0m",
+			"DEBG": "\u001b[32m*\u001b[0m",
+			"WARN": "\u001b[33m*\u001b[0m",
+			"EROR": "\u001b[31m*\u001b[0m",
+			"CRIT": "\u001b[35m*\u001b[0m",
+		}
+		return colors[level.String()]
+	}
+
 	// Iterate over the pieces, replacing known formats
 	for i, piece := range pieces {
 		if i > 0 && len(piece) > 0 {
 			switch piece[0] {
+			case 'c':
+				out.WriteString(lvl2color(rec.Level))
 			case 'T':
 				out.WriteString(cache.longTime)
 			case 't':
